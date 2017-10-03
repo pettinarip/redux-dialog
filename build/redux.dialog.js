@@ -59,7 +59,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.closeDialog = exports.openDialog = exports.dialogReducer = undefined;
+	exports.closeDialog = exports.openDialog = exports.dialog = undefined;
 
 	var _reduxDialog = __webpack_require__(1);
 
@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = _reduxDialog2.default;
-	exports.dialogReducer = _reducer2.default;
+	exports.dialog = _reducer2.default;
 	exports.openDialog = _actions.openDialog;
 	exports.closeDialog = _actions.closeDialog;
 
@@ -129,10 +129,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _createClass(ReduxDialog, [{
 	        key: 'render',
 	        value: function render() {
+	          var _props = this.props,
+	              isOpen = _props.isOpen,
+	              onRequestClose = _props.onRequestClose,
+	              payload = _props.payload;
+
+
 	          return _react2.default.createElement(
 	            _reactModal2.default,
-	            _extends({}, defaults, this.props),
-	            _react2.default.createElement(WrappedComponent, this.props)
+	            _extends({}, defaults, { isOpen: isOpen, onRequestClose: onRequestClose }),
+	            _react2.default.createElement(WrappedComponent, payload)
 	          );
 	        }
 	      }]);
@@ -140,23 +146,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return ReduxDialog;
 	    }(_react.Component);
 
-	    var mapStateToProps = function mapStateToProps(state, props) {
-	      var reducer = typeof state.get === 'function' ? state.get('dialogReducer') : state.dialogReducer;
-
-	      if (reducer.dialogs && reducer.dialogs.hasOwnProperty(name)) return { isOpen: true };
-
-	      return {};
+	    var mapStateToProps = function mapStateToProps(state) {
+	      var reducer = typeof state.get === 'function' ? state.get('dialog') : state.dialog;
+	      if (reducer.hasOwnProperty(name)) {
+	        return _extends({}, { isOpen: true, payload: reducer[name] });
+	      } else {
+	        return {};
+	      }
 	    };
 
 	    var mapDispatchToProps = function mapDispatchToProps(dispatch, props) {
 	      return {
-	        onAfterOpen: function onAfterOpen() {
-	          props.onAfterOpen && props.onAfterOpen();
-	          dispatch((0, _actions.openDialog)(name));
-	        },
-
 	        onRequestClose: function onRequestClose() {
-	          props.onRequestClose && props.onRequestClose();
 	          dispatch((0, _actions.closeDialog)(name));
 	        }
 	      };
@@ -1540,17 +1541,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	function openDialog(name) {
+	function openDialog(name, payload) {
 	  return {
 	    type: c.OPEN_DIALOG,
-	    name: name
+	    name: name,
+	    payload: payload
 	  };
 	}
 
-	function closeDialog(name) {
+	function closeDialog(name, payload) {
 	  return {
 	    type: c.CLOSE_DIALOG,
-	    name: name
+	    name: name,
+	    payload: payload
 	  };
 	}
 
@@ -1587,18 +1590,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	exports.default = function () {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	  var action = arguments[1];
 
 	  switch (action.type) {
 	    case c.OPEN_DIALOG:
-	      return _extends({}, state, {
-	        dialogs: _defineProperty({}, action.name, true)
-	      });
+	      return _extends({}, state, _defineProperty({}, action.name, _extends({}, action.payload)));
 	      break;
 
 	    case c.CLOSE_DIALOG:
-	      delete state.dialogs[action.name];
+	      delete state[action.name];
 	      return _extends({}, state);
 	      break;
 

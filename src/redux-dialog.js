@@ -12,30 +12,27 @@ const reduxDialog = (defaults) => {
   return((WrappedComponent) => {
     class ReduxDialog extends Component {
       render () {
+        const { isOpen, onRequestClose, payload } = this.props;
+
         return (
-          <Modal {...defaults} {...this.props}>
-            <WrappedComponent {...this.props} />
+          <Modal {...defaults} isOpen={isOpen} onRequestClose={onRequestClose}>
+            <WrappedComponent {...payload} />
           </Modal>
         );
       }
     }
 
-    const mapStateToProps = (state, props) => {
-      const reducer = typeof state.get === 'function' ? state.get('dialogReducer') : state.dialogReducer;
-
-      if (reducer.dialogs && reducer.dialogs.hasOwnProperty(name)) return { isOpen: true };
-
-      return {};
+    const mapStateToProps = state => {
+      const reducer = typeof state.get === 'function' ? state.get('dialog') : state.dialog;
+      if (reducer.hasOwnProperty(name)) {
+        return Object.assign({}, { isOpen: true, payload: reducer[name] });
+      } else {
+        return {}
+      }
     };
 
     const mapDispatchToProps = (dispatch, props) => ({
-      onAfterOpen: () => {
-        props.onAfterOpen && props.onAfterOpen();
-        dispatch(openDialog(name))
-      },
-
       onRequestClose: () => {
-        props.onRequestClose && props.onRequestClose();
         dispatch(closeDialog(name))
       }
     })

@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import reduxDialog, { dialogReducer, openDialog, closeDialog } from '../src';
+import reduxDialog, { dialog, openDialog, closeDialog } from '../src';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 
 const reducers = {
-  dialogReducer: dialogReducer
+  dialog
 }
 
 const reducer = combineReducers(reducers);
-const store = createStore(reducer);
+const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
-const BasicDialog = () => (
+const BasicDialog = ({ test }) => (
   <div>
     <div className="dlg--body">
-      My awesome modalbox!
+      My awesome modalbox {test}!
     </div>
   </div>
 )
@@ -26,8 +26,8 @@ const Dialog = reduxDialog({
 const App = () => (
   <Provider store={store}>
     <div>
-      <Dialog onAfterOpen={ () => console.log('On After Open') } onRequestClose={ () => console.log('On Request Close') } />
-      <a onClick={() => store.dispatch(openDialog('signupDialog'))} href="#">Open Dialog</a>
+      <Dialog />
+      <a onClick={() => store.dispatch(openDialog('signupDialog', { test: 1 }))} href="#">Open Dialog</a>
     </div>
   </Provider>
 )
