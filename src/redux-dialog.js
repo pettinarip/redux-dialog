@@ -12,20 +12,23 @@ const reduxDialog = (defaults) => {
   return((WrappedComponent) => {
     class ReduxDialog extends Component {
       render () {
-        const { isOpen, onRequestClose, payload } = this.props;
+        const { isOpen, onRequestClose, params } = this.props;
 
         return (
           <Modal {...defaults} isOpen={isOpen} onRequestClose={onRequestClose}>
-            <WrappedComponent {...payload} />
+            <WrappedComponent {...params} />
           </Modal>
         );
       }
     }
 
-    const mapStateToProps = state => {
+    const mapStateToProps = (state, ownProps) => {
       const reducer = typeof state.get === 'function' ? state.get('dialog') : state.dialog;
       if (reducer.hasOwnProperty(name)) {
-        return Object.assign({}, { isOpen: true, payload: reducer[name] });
+        return {
+          isOpen: true,
+          params: Object.assign({}, ownProps, reducer[name])
+        };
       } else {
         return {}
       }

@@ -132,13 +132,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var _props = this.props,
 	              isOpen = _props.isOpen,
 	              onRequestClose = _props.onRequestClose,
-	              payload = _props.payload;
+	              params = _props.params;
 
 
 	          return _react2.default.createElement(
 	            _reactModal2.default,
 	            _extends({}, defaults, { isOpen: isOpen, onRequestClose: onRequestClose }),
-	            _react2.default.createElement(WrappedComponent, payload)
+	            _react2.default.createElement(WrappedComponent, params)
 	          );
 	        }
 	      }]);
@@ -146,10 +146,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return ReduxDialog;
 	    }(_react.Component);
 
-	    var mapStateToProps = function mapStateToProps(state) {
+	    var mapStateToProps = function mapStateToProps(state, ownProps) {
 	      var reducer = typeof state.get === 'function' ? state.get('dialog') : state.dialog;
 	      if (reducer.hasOwnProperty(name)) {
-	        return _extends({}, { isOpen: true, payload: reducer[name] });
+	        return {
+	          isOpen: true,
+	          params: _extends({}, ownProps, reducer[name])
+	        };
 	      } else {
 	        return {};
 	      }

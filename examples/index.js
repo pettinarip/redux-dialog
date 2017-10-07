@@ -11,10 +11,10 @@ const reducers = {
 const reducer = combineReducers(reducers);
 const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
-const BasicDialog = ({ test }) => (
+const BasicDialog = ({ test, asd }) => (
   <div>
     <div className="dlg--body">
-      My awesome modalbox {test}!
+      My awesome modalbox {test} {asd}!
     </div>
   </div>
 )
@@ -26,7 +26,7 @@ const Dialog = reduxDialog({
 const App = () => (
   <Provider store={store}>
     <div>
-      <Dialog />
+      <Dialog contentLabel='Dialog' asd={1} />
       <a onClick={() => store.dispatch(openDialog('signupDialog', { test: 1 }))} href="#">Open Dialog</a>
     </div>
   </Provider>
